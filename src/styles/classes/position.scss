@@ -1,0 +1,40 @@
+// Position side classes
+@each $pss,
+  $psv
+    in (
+      'top': 'top',
+      'right': 'right',
+      'bottom': 'bottom',
+      'left': 'left',
+      'top-bottom': (
+        'top',
+        'bottom'
+      ),
+      'right-left': (
+        'right',
+        'left'
+      ),
+      'all': (
+        'top',
+        'right',
+        'bottom',
+        'left'
+      )
+    )
+{
+  $p: 0;
+  @while $p <= 100 {
+    @if type-of($psv) == string {
+      .#{$pss}-#{$p} {
+        #{$psv}: $p * 1% !important;
+      }
+    } @else if type-of($psv) == list {
+      .#{$pss}-#{$p} {
+        @for $j from 1 through length($psv) {
+          #{nth($psv, $j)}: $p * 1% !important;
+        }
+      }
+    }
+    $p: $p + 25;
+  }
+}

@@ -1,0 +1,94 @@
+// Border classes
+@each $bss,
+    $bsv
+        in (
+            't': 'top',
+            'r': 'right',
+            'b': 'bottom',
+            'l': 'left',
+            'y': (
+                'top',
+                'bottom'
+            ),
+            'x': (
+                'right',
+                'left'
+            ),
+            'a': 1
+        )
+{
+    @for $i from 0 through 5 {
+        @if type-of($bsv) ==string {
+            .border-#{$bss}-#{$i} {
+                border-#{$bsv}: $i + px solid #eee;
+            }
+        } @else if type-of($bsv) ==list {
+            .border-#{$bss}-#{$i} {
+                border-#{nth($bsv, 1)}: $i + px solid #eee;
+                border-#{nth($bsv, 2)}: $i + px solid #eee;
+            }
+        } @else {
+            .border-a-#{$i} {
+                border: $i + px solid #eee;
+            }
+        }
+    }
+}
+
+.border-primary {
+    border-color: #d7dbdf !important;
+}
+
+// Border Radius classes
+@each $br in 0, 3, 5, 10, 15 {
+    .round-#{$br} {
+        border-radius: $br + px !important;
+    }
+}
+
+.round-50 {
+    border-radius: 50% !important;
+}
+
+// Border style classes
+@each $bs in solid, dashed {
+    .border-style-#{$bs} {
+        border-style: $bs !important;
+    }
+}
+
+@each $bss,
+    $bsv
+        in (
+            't': 'top',
+            'r': 'right',
+            'b': 'bottom',
+            'l': 'left',
+            'y': (
+                'top',
+                'bottom'
+            ),
+            'x': (
+                'right',
+                'left'
+            ),
+            'a': 1
+        )
+{
+    @each $bs in solid, dashed {
+        @if type-of($bsv) ==string {
+            .border-#{$bss}-style-#{$bs} {
+                border-#{$bsv}-style: $bs !important;
+            }
+        } @else if type-of($bsv) ==list {
+            .border-#{$bss}-style-#{$bs} {
+                border-#{nth($bsv, 1)}-style: $bs !important;
+                border-#{nth($bsv, 2)}-style: $bs !important;
+            }
+        } @else {
+            .border-a-style-#{$bs} {
+                border-style: $bs !important;
+            }
+        }
+    }
+}

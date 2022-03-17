@@ -1,0 +1,26 @@
+// @import '~vuetify/src/styles/styles.sass';
+// $colors: (
+//     'primary': #ff3333,
+//     'secondary': #4caf50,
+//     'tertiary': #495057,
+//     'accent': #f8f8ff,
+//     'error': #f55a4e,
+//     'info': #00d3ee,
+//     'success': #5cb860,
+//     'warning': #ffa21a,
+//     'tranparent': transparent,
+//     'white': #fff,
+//     'black': #000
+// );
+// $primary: #ff3333;
+// $accent: #e8e4fc;
+$secondary: #8ea0bc;
+$btn-text-transform: none !default;
+$body-font-family: 'system-ui';
+// text field
+$text-field-filled-full-width-outlined-slot-min-height: 52px;
+.theme--light.v-application {
+    background: #ffffff !important;
+}
+
+$card-border-radius: 0px;

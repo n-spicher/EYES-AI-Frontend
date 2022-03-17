@@ -1,0 +1,90 @@
+// Height & Width in % classes
+$i: 0;
+@while $i <= 100 {
+    .height-#{$i} {
+        height: $i * 1px !important;
+    }
+    .min-height-#{$i} {
+        min-height: $i * 1% !important;
+    }
+    .width-#{$i} {
+        width: $i * 1% !important;
+    }
+    $i: $i + 5;
+}
+
+.height-1px {
+    height: 1px;
+}
+
+.height-auto {
+    height: auto !important;
+}
+
+.height-100x {
+    height: 100%;
+}
+.height-100vh {
+    height: 100vh;
+}
+.min {
+    &-height {
+        &-100vh {
+            min-height: 100vh;
+        }
+        &-90vh {
+            min-height: 90vh;
+        }
+        &-80vh {
+            min-height: 80vh;
+        }
+    }
+}
+
+$i: 100;
+.max {
+    &-width {
+        @while $i < 1000 {
+            &-#{$i} {
+                max-width: #{$i}px;
+            }
+
+            $i: $i + 100;
+        }
+    }
+
+    $i: 100;
+    &-height {
+        @while $i < 1000 {
+            &-#{$i} {
+                max-height: #{$i}px;
+            }
+
+            $i: $i + 100;
+        }
+    }
+}
+
+$i: 100;
+.min {
+    &-width {
+        @while $i < 1000 {
+            &-#{$i} {
+                min-width: #{$i}px;
+            }
+
+            $i: $i + 100;
+        }
+    }
+
+    $i: 100;
+    &-height {
+        @while $i < 1000 {
+            &-#{$i} {
+                min-height: #{$i}px;
+            }
+
+            $i: $i + 100;
+        }
+    }
+}

@@ -1,0 +1,33 @@
+stages:
+    - build
+    - deploy
+
+cache: &global_cache
+    paths:
+        - node_modules/
+    policy: pull
+
+install_and_build:
+    stage: build
+    tags:
+        - dakia-server
+    artifacts:
+        paths:
+            - dist/
+        expire_in: 1 hour
+    before_script:
+        - npm i
+    script:
+        - npm run build
+    only:
+        - development
+
+deploy:
+    stage: deploy
+    script:
+        - Remove-Item C:/wwwnet/mhparks/mhparks-web/* -Recurse -Force
+        - Copy-Item -Path './dist/*' -Destination 'C:/wwwnet/mhparks/mhparks-web' -Recurse -Force
+    tags:
+        - dakia-server
+    only:
+        - development
