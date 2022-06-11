@@ -1,6 +1,6 @@
 import VueWrapper from '@/components/core/Vue/vue.wrapper';
-import { Component } from 'vue-property-decorator';
-import { ValidationObserver } from 'vee-validate';
+import {Component} from 'vue-property-decorator';
+import {ValidationObserver} from 'vee-validate';
 
 @Component({
     components: {
@@ -16,5 +16,13 @@ export default class BaseFormComponent extends VueWrapper {
     // Methods
     public reset() {
         this.$refs.baseForm.reset();
+    }
+
+    public validate() {
+        return (this.$refs.baseForm as any)?.validate() || true;
+    }
+
+    public isInvalid() {
+        return this.$refs.baseForm && this.$refs.baseForm['flags'];
     }
 }

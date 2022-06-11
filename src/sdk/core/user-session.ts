@@ -19,6 +19,13 @@ export class UserSession {
         this._session.next(session);
     }
 
+    get isAdmin() {
+        return this.Session?.Role === 'Admin';
+    }
+    get isSuperAdmin() {
+        return this.Session?.Role === 'SuperAdmin';
+    }
+
     constructor() {
         this.fetchCookies();
         if (this.Session?.JwtToken) {

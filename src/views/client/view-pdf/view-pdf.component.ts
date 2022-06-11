@@ -3,15 +3,18 @@ import {CategoryApi, CategoryItemModel} from '@/sdk';
 import {CategoryModel} from '@/sdk/models/category/category.model';
 import {PdfProcessorService} from '@/services/pdf-processor.service';
 import {Component} from 'vue-property-decorator';
+import JSZip from 'jszip';
+import {saveAs} from 'file-saver';
 
 @Component
 export default class ViewPdfComponent extends VueWrapper {
     public $refs!: {
         pdfViewer: HTMLDivElement;
         thumbnailsContainer: HTMLDivElement;
+        pdfPages: HTMLDivElement;
     };
 
-    public pageViewer: HTMLDivElement | null = null;
+    // public pageViewer: HTMLDivElement | null = null;
 
     public zoom: number = 100;
 
@@ -20,11 +23,19 @@ export default class ViewPdfComponent extends VueWrapper {
     public pagesCount: number = 0;
     public currentPage: number = 1;
 
+    public color: string = 'rgba(255,0,0,1)';
+
     // public selectedCategory: number | null = null;
 
     public query: string | null = null;
 
     public pdfloaded = false;
+
+    public zip: JSZip | null = null;
+
+    public created() {
+        this.zip = new JSZip();
+    }
 
     public mounted() {
         // this.pdfProcessorSrv.pdfLoaded.subscribe(() => {
@@ -38,7 +49,7 @@ export default class ViewPdfComponent extends VueWrapper {
         //     }
         // });
 
-        this.pageViewer = this.$refs.pdfViewer.querySelector('#pdf-pages');
+        // this.pageViewer = this.$refs.pdfViewer.querySelector('#pdf-pages');
 
         this.pdfProcessorSrv.fileName.subscribe(fileName => {
             if (!!fileName) {
@@ -47,7 +58,7 @@ export default class ViewPdfComponent extends VueWrapper {
         });
 
         this.pdfProcessorSrv.file.subscribe(file => {
-            console.log('file received: ', file);
+            // console.log('file received: ', file);
             if (!!file) {
                 this.initPdfLoad(file);
             }
@@ -68,7 +79,7 @@ export default class ViewPdfComponent extends VueWrapper {
     }
 
     public initPdfLoad(file: File) {
-        if (this.pageViewer && this.$refs.thumbnailsContainer) {
+        if (this.$refs.pdfPages && this.$refs.thumbnailsContainer) {
             this.pdfProcessorSrv.pdfLoaded$.next(false);
 
             const fileReader = new FileReader();
@@ -78,7 +89,7 @@ export default class ViewPdfComponent extends VueWrapper {
                 this.pdfProcessorSrv.OpenFile(
                     typeDArray,
                     // this.pdfProcessorSrv.fileName.value!
-                    this.pageViewer!,
+                    this.$refs.pdfPages!,
                     this.$refs.thumbnailsContainer
                 );
             };
@@ -139,8 +150,8 @@ export default class ViewPdfComponent extends VueWrapper {
     }
 
     public updateZoom() {
-        if (this.pageViewer) {
-            (this.pageViewer as any).style.zoom = this.zoom + '%';
+        if (this.$refs.pdfPages) {
+            (this.$refs.pdfPages as any).style.zoom = this.zoom + '%';
         }
     }
 
@@ -210,33 +221,119 @@ export default class ViewPdfComponent extends VueWrapper {
         this.pdfProcessorSrv.find([this.query!], true);
     }
 
-    public download() {
-        const element = document.getElementById('pdf-pages');
-        if (element) {
-            const oldClasses = element.className;
+    public generateCategoryFile(category: CategoryModel) {
+        return new Promise((resolve, reject) => {
+            setTimeout(() => {
+                const element = document.getElementById('pdf-pages');
+                console.log('child elements', element?.childElementCount);
+                if (element && element.childElementCount > 0) {
+                    this.LoaderSrv.showFullScreenLoader(`Generating Pdf Document for ${category.Name}...`);
 
-            const hiddenPages = element.querySelectorAll('[data-hidden="true"]');
-            for (let i = 0; i < hiddenPages.length; i++) {
-                const e = hiddenPages[i];
-                element.removeChild(e);
-            }
-            // console.log(cloned);
+                    const worker = html2pdf();
 
-            // element.className = 'pdf-container pdf-print';
+                    worker
+                        .from(element)
+                        .set({
+                            // margin: 0,
 
-            this.LoaderSrv.showFullScreenLoader('Generating Pdf Document...');
-            html2pdf()
-                .set({
-                    pagebreak: {mode: 'avoid-all', before: '.page'}
-                })
-                .from(element)
-                .save()
-                .then(() => {
-                    // element.className = oldClasses;
+                            // image: {type: 'png'},
+                            // html2canvas: {scale: 2},
+                            // jsPDF: {unit: 'in', format: 'letter', orientation: 'p'},
+                            pagebreak: {mode: 'avoid-all', before: '.page'}
+                        })
+                        .outputPdf()
+                        .then((pdf: any) => {
+                            if (pdf) {
+                                const fileName = `${category.Name}.pdf`;
+                                this.zip?.file(fileName, pdf, {
+                                    binary: true
+                                });
 
-                    this.initPdfLoad(this.pdfProcessorSrv.getFile()!);
-                    this.LoaderSrv.hideFullScreenLoader();
+                                resolve(fileName);
+                                this.LoaderSrv.hideFullScreenLoader();
+
+                                // .generateAsync({type: 'blob'})
+                                // .then(content => {
+                                //     // saveAs(content, 'pdf-zip.zip');
+
+                                //     // this.initPdfLoad(this.pdfProcessorSrv.getFile()!);
+                                //     // this.LoaderSrv.hideFullScreenLoader();
+                                // });
+                            } else {
+                                resolve(null);
+                                this.LoaderSrv.hideFullScreenLoader();
+                            }
+                        });
+                } else {
+                    resolve(null);
+                }
+            }, 1000);
+        });
+    }
+
+    count = 1;
+    currentSelectedCategory: number | null = null;
+    generatedFiles: number = 0;
+
+    processCategoriesForDownload(startId: number) {
+        if (this.count < this.pdfProcessorSrv.categories.length && startId === -1) {
+            this.pdfProcessorSrv.selectedCategoryId = this.pdfProcessorSrv.categories[this.count].Id;
+            this.onCategoryClick();
+
+            return this.generateCategoryFile(this.pdfProcessorSrv.categories[this.count]).then(result => {
+                // console.log('generateCategoryFile result', result);
+                if (!!result) {
+                    this.generatedFiles++;
+                }
+                this.count++;
+
+                return new Promise((res: (v: number) => void, rej) => {
+                    this.processCategoriesForDownload(startId).then(num => {
+                        // console.log('category inner: ', num);
+                        res(num);
+                    });
                 });
+            });
+        } else {
+            return this.generateCategoryFile(this.pdfProcessorSrv.selectedCategories[0]).then(result => {
+                // console.log('generateCategoryFile result', result);
+                if (!!result) {
+                    this.generatedFiles++;
+                }
+                this.count++;
+
+                return Promise.resolve(this.count);
+            });
         }
+
+        return Promise.resolve(this.count);
+    }
+
+    public download() {
+        this.generatedFiles = 0;
+        this.currentSelectedCategory = this.pdfProcessorSrv.selectedCategoryId;
+        this.LoaderSrv.showFullScreenLoader();
+        this.processCategoriesForDownload(this.currentSelectedCategory!)
+            .then(num => {
+                // console.log('category: ', num);
+
+                this.pdfProcessorSrv.selectedCategoryId = this.currentSelectedCategory;
+                this.onCategoryClick();
+
+                if (this.zip) {
+                    this.LoaderSrv.showFullScreenLoader('Generating zip file.');
+                    this.zip
+                        ?.generateAsync({type: 'blob'})
+                        .then(function(content) {
+                            saveAs(content, 'equipments.zip');
+                        })
+                        .finally(() => {
+                            this.LoaderSrv.hideFullScreenLoader();
+                        });
+                }
+            })
+            .finally(() => {
+                this.LoaderSrv.hideFullScreenLoader();
+            });
     }
 }

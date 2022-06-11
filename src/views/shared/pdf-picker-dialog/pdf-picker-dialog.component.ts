@@ -50,6 +50,10 @@ export default class PdfPickerDialogComponent extends VueWrapper {
 
     public acceptedFiles: string = 'application/pdf';
 
+    public mounted() {
+        this.pdfProcessorSrv.findSelectedCategory();
+    }
+
     public Add() {
         this.pdfProcessorSrv.AddItem();
     }

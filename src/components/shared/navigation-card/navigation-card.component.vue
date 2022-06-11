@@ -1,35 +1,11 @@
 <template>
     <div>
-        <base-card
-            class="pa-1 mb-3 "
-            tile
-            v-for="(link, index) in navigationLinks"
-            :key="index"
-        >
-            <v-navigation-drawer
-                class="pa-0"
-                floating
-                stateless
-                :value="true"
-                width="auto"
-            >
-                <div
-                    class="pb-2"
-                    v-if="
-                        link[index].Position == (1 || 2) ||
-                            link[index].Position == 2
-                    "
-                >
-                    <v-card-title
-                        class="d-flex justify-center primary--text py-2"
-                        >{{
-                            link[index].Position == 1
-                                ? 'System Data Items'
-                                : link[index].Position == 2
-                                ? 'State Data Items'
-                                : ''
-                        }}</v-card-title
-                    >
+        <base-card class="pa-1 mb-3 " tile v-for="(link, index) in navigationLinks" :key="index">
+            <v-navigation-drawer class="pa-0" floating stateless :value="true" width="auto">
+                <div class="pb-2" v-if="link[index].Position == (1 || 2) || link[index].Position == 2">
+                    <v-card-title class="d-flex justify-center primary--text py-2">{{
+                        link[index].Position == 1 ? 'Settings' : link[index].Position == 2 ? 'State Data Items' : ''
+                    }}</v-card-title>
                     <v-divider />
                 </div>
                 <v-list dense nav flat class="pa-0 transparent">
@@ -37,12 +13,10 @@
                         v-for="(subLink, i) in link"
                         class="py-1 mb-1 rounded-5"
                         :class="{
-                            'active-link-hover': !!$route.matched.find(
-                                x => x.name === subLink.Name
-                            )
+                            'active-link-hover': !!$route.matched.find(x => x.name === subLink.Name)
                         }"
                         :key="`link-${i}`"
-                        :to="{ name: subLink.Name }"
+                        :to="{name: subLink.Name}"
                     >
                         <v-list-item-icon class="mr-3">
                             <v-icon color="primary">{{ subLink.Icon }}</v-icon>
@@ -50,9 +24,7 @@
 
                         <v-list-item-content>
                             <div class="d-flex justify-space-between">
-                                <v-list-item-title class="primary--text">{{
-                                    subLink.Name
-                                }}</v-list-item-title>
+                                <v-list-item-title class="primary--text">{{ subLink.Title }}</v-list-item-title>
                                 <div class="right">
                                     <v-icon color="primary height-0 width-0">
                                         mdi-chevron-right

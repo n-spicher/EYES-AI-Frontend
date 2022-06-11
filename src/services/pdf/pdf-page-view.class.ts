@@ -18,6 +18,8 @@ export class PdfPageView {
     public pdfPageRotation: number = 0;
     public scale: number = 1;
 
+    public searched: boolean = false;
+
     public pageLoaded: boolean = false;
 
     // public xfaHtml: AnyObject | null = null;
@@ -99,6 +101,16 @@ export class PdfPageView {
         this.pageEleme.setAttribute('data-loaded', 'true');
     }
 
+    public findCodesWithoutHilighting(q: Array<string>, clear = true) {
+        let found = false;
+        for (let i = 0; i < q.length; i++) {
+            const f = this.textHighlighter._calculateOnlyMatch(q[i], clear);
+            if (f) found = f;
+        }
+
+        return found;
+    }
+
     public findCodes(q: Array<string>, clear = true) {
         let found = false;
         for (let i = 0; i < q.length; i++) {
@@ -149,17 +161,22 @@ export class PdfPageView {
 
     public showPage() {
         if (!!this.pageEleme) {
-            this.pageEleme.style.display = 'block';
-            this.pageEleme.removeAttribute('data-hidden');
+            // this.pageEleme.style.display = 'block';
+            // this.pageEleme.removeAttribute('data-hidden');
+            if (!!this.pageEleme) {
+                this.pdfViewerElem?.appendChild(this.pageEleme);
+            }
             this.pageLoaded = true;
         }
     }
 
     public hidePage() {
         if (!!this.pageEleme) {
-            this.pageEleme.style.display = 'none';
-            this.pageEleme.setAttribute('data-hidden', 'true');
+            // this.pageEleme.style.display = 'none';
+            // this.pageEleme.setAttribute('data-hidden', 'true');
             this.pageLoaded = false;
+            this.pageEleme.remove();
+            // console.log('hidden page', this.pageEleme);
         }
     }
 

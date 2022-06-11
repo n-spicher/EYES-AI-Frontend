@@ -41,12 +41,12 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
     // Get current user from cookie.
-    // const isUserLoggedIn = UserSessionSrv.isUserAuthenticated;
-    const isUserLoggedIn = true;
+    const isUserLoggedIn = UserSessionSrv.isUserAuthenticated;
+    // const isUserLoggedIn = false;
     // new ApiAuth().SessionValue && !!new ApiAuth().SessionValue!.UserId;
 
     const isNonAuthRoute = ['Login', 'Signup', 'Forgot Password', 'Resend Email'].includes(to.name!);
-    const isPublicRoute = ['Home'].includes(to.name!);
+    const isPublicRoute = ['View PDF'].includes(to.name!);
 
     new FilterService().Filter.Status = null;
 
@@ -56,9 +56,9 @@ router.beforeEach((to, from, next) => {
     } else if (!isUserLoggedIn && isNonAuthRoute) {
         next();
     } else if (isUserLoggedIn && isNonAuthRoute) {
-        next({name: 'Home', query: {redirect_reason: 'UNAUTHORIZIED'}});
+        next({name: 'Login', query: {redirect_reason: 'UNAUTHORIZIED'}});
     } else if (!isUserLoggedIn && !isNonAuthRoute) {
-        next({name: 'Home', query: {redirect_reason: 'UNAUTHORIZIED'}});
+        next({name: 'Login', query: {redirect_reason: 'UNAUTHORIZIED'}});
     } else {
         next();
     }

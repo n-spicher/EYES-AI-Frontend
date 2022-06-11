@@ -5,7 +5,7 @@ export class SdkConfig {
         return this._ApiBaseUrl + '/api';
     }
     static get ApiBaseUrl() {
-        return this._ApiBaseUrl;
+        return this._ApiBaseUrl as string;
     }
     static set ApiBaseUrl(path: string) {
         this._ApiBaseUrl = path;

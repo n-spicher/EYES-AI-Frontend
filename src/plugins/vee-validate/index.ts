@@ -55,6 +55,15 @@ extend('size', {
     message: 'File must not be greater than {size}KB!'
 });
 
+extend('alphabetic', {
+    params: ['fieldName'],
+    validate: value => new RegExp(/^[a-zA-Z ]+$/).test(value),
+
+    message: (field, {fieldName}: any) => {
+        return `${fieldName ?? 'This field'} can only contain alpha characters.`;
+    }
+});
+
 extend('positive_float', {
     validate: value => +value >= 0,
     message: 'The value must not be negative.'

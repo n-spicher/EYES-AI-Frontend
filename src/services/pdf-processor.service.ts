@@ -6,6 +6,7 @@ import {getDocument as getPdfDocument, PDFDocumentLoadingTask, PDFDocumentProxy,
 import {PdfPageThumbnail, PdfPageView} from './pdf';
 import {CategoryModel} from '@/sdk/models/category/category.model';
 import {CategoryItemModel} from '@/sdk/models/category-item/category-item.model';
+import {AnyObject} from '@/globals';
 
 @ServiceClass()
 export class PdfProcessorService {
@@ -28,7 +29,7 @@ export class PdfProcessorService {
 
     public foundPagesList: Array<boolean> = [];
 
-    public selectedCategoryId: number | null = null;
+    public selectedCategoryId: number | null = -1;
 
     public setFileName(name: string) {
         this.fileName.next(name);
@@ -43,6 +44,8 @@ export class PdfProcessorService {
     public getFile() {
         return this.file.value;
     }
+
+    public categoryPages: AnyObject = {};
 
     public collingTower: Array<string> = ['manufacturers', 'evapco', 'warranty', 'basin heater', 'control panel', 'equalizer connection', 'walkway'];
 
@@ -78,14 +81,14 @@ export class PdfProcessorService {
             .subscribe(rs => {
                 this.categories = [
                     new CategoryModel({
-                        Id: 0,
+                        Id: -1,
                         Name: 'All Equipment'
                     }),
                     ...rs
                 ];
 
+                this.findSelectedCategory();
                 if (this.pdfLoaded$.value) {
-                    this.findSelectedCategory();
                     this.loadPagesAndSearch();
                 }
             })
@@ -111,9 +114,9 @@ export class PdfProcessorService {
     }
 
     public findSelectedCategory() {
-        if (this.selectedCategoryId === 0) {
+        if (this.selectedCategoryId === -1) {
             this.selectedCategories = [...this.categories];
-            console.log(this.selectedCategories);
+            // console.log(this.selectedCategories);
             return;
         }
         const found = this.categories.find(x => x.Id === this.selectedCategoryId);
@@ -155,6 +158,7 @@ export class PdfProcessorService {
 
         this._pdfPageViews = [];
         this.pdfThumbsList = [];
+        this.categoryPages = {};
 
         new LoaderService().showFullScreenLoader();
         this.loadedPdfTask = getPdfDocument(
@@ -185,13 +189,13 @@ export class PdfProcessorService {
                 pdfViewerElem: this.pdfContainerElem
             });
             pageView.hidePage();
+
             this._pdfPageViews.push(pageView);
 
             const pageThumb = new PdfPageThumbnail({
                 id: i + 1,
                 pdfThumbsElem: this.thumbsContainerElem!
             });
-
             pageThumb.hideThumb();
 
             this.pdfThumbsList.push(pageThumb);
@@ -276,7 +280,17 @@ export class PdfProcessorService {
         // }
 
         for (const category of this.selectedCategories) {
-            const arr = category.CategoryItems.map(x => x.Name!);
+            let arr = category.CategoryItems.map(x => x.Name!);
+            const syns: Array<string> = [];
+            for (const item of category.CategoryItems) {
+                if (item.CategoryItemSynonyms?.length && item.CategoryItemSynonyms.length > 0) {
+                    syns.push(...item.CategoryItemSynonyms!.map(x => x.Name!));
+                }
+            }
+
+            if (syns.length > 0) {
+                arr = [...arr, ...syns];
+            }
             this.find(arr, false);
         }
     }
@@ -284,20 +298,33 @@ export class PdfProcessorService {
     public find(text: Array<string>, clear: boolean) {
         for (let i = 0; i < this._pdfPageViews.length; i++) {
             const pageView = this._pdfPageViews[i];
+            // console.log(text);
+            // if (!pageView.searched) {
             pageView.find(text, clear);
+            pageView.searched = true;
+            // }
         }
     }
 
-    public findPages(text: Array<string>, clear: boolean) {
+    public findPages(codes: Array<string>, clear: boolean, key: string | null = null) {
         for (let i = 0; i < this._pdfPageViews.length; i++) {
             const pageView = this._pdfPageViews[i];
-            const isFound = pageView.findCodes(text, clear);
-            this.foundPagesList[i] = isFound ? isFound : this.foundPagesList[i] !== undefined ? this.foundPagesList[i] : false;
+
+            if (!!key && this.categoryPages[key]) {
+                const isFound = pageView.findCodesWithoutHilighting(codes, clear);
+                if (isFound) {
+                    this.categoryPages[key].push(i);
+                }
+            } else {
+                const isFound = pageView.findCodes(codes, clear);
+                this.foundPagesList[i] = isFound ? isFound : this.foundPagesList[i] !== undefined ? this.foundPagesList[i] : false;
+            }
         }
         // console.log('code found: ', this.foundPagesList);
     }
 
     public searchPages() {
+        this.categoryPages = {};
         for (let i = 0; i < this.foundPagesList.length; i++) {
             this.foundPagesList[i] = false;
         }
@@ -306,11 +333,21 @@ export class PdfProcessorService {
             element.clear();
         }
 
+        for (const category of this.categories) {
+            if (category.Id != -1) {
+                const codes = category.CategoryCodes.map(x => x.Code!);
+
+                const key = `category-${category.Id}`;
+                this.categoryPages[key] = [];
+                this.findPages(codes, false, key);
+            }
+        }
+
         // const selected = this.categories.find(x => x.Id === this.selectedCategories?.Id);
         for (const category of this.selectedCategories) {
             if (category.Id! > 0) {
-                const arr = category.CategoryCodes.map(x => x.Code!);
-                this.findPages(arr, false);
+                const codes = category.CategoryCodes.map(x => x.Code!);
+                this.findPages(codes, false);
             }
         }
 

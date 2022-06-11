@@ -17,6 +17,8 @@ export class CoreService {
         }
     }
 
+    public UserImage = '/images/profile-image.png';
+
     public Drawer = {
         Mode: true,
         Mini: false,

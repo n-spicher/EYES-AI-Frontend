@@ -4,22 +4,14 @@
             <div class="pa-3 text-center">
                 <span class="headline">{{ ConfirmService.Title }}</span>
             </div>
-            <v-card-text
-                class="text-center pb-3"
-                v-html="ConfirmService.Detail"
-            />
+
+            <v-card-text class="text-center pb-3 d-flex justify-center">
+                <base-checkbox class="mt-0 mb-3" :true-value="true" :false-value="false" :input-value.sync="sure" :label="ConfirmService.Detail" />
+            </v-card-text>
+
             <v-card-actions class="pt-0 pb-4 d-flex justify-center">
-                <v-btn
-                    small
-                    color="accent1"
-                    @click="ConfirmService.close(false)"
-                    >{{ ConfirmService.Options.CancelText }}</v-btn
-                >
-                <v-btn
-                    color="primary"
-                    small
-                    @click="ConfirmService.close(true)"
-                >
+                <v-btn small color="accent1" @click="ConfirmService.close(false)">{{ ConfirmService.Options.CancelText }}</v-btn>
+                <v-btn color="primary" small :disabled="!sure" @click="ConfirmService.close(true)">
                     {{ ConfirmService.Options.ConfirmText }}
                 </v-btn>
             </v-card-actions>

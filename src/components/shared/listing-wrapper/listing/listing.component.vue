@@ -34,7 +34,7 @@
                     </div>
                 </v-col>
                 <v-col cols="12" md="2" sm="6">
-                    <div class="pa-1">
+                    <div class="pa-1" v-if="!$attrs.HideSearch">
                         <search-component v-on="$listeners" />
                     </div>
                 </v-col>

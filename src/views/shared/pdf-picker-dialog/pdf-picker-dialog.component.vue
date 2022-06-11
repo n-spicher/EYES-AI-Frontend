@@ -38,7 +38,7 @@
                         </base-autocomplete>
                     </v-col>
                     <v-col cols="12" md="6">
-                        <div class="d-flex " v-if="pdfProcessorSrv.selectedCategoryId !== 0">
+                        <div class="d-flex " v-if="pdfProcessorSrv.selectedCategoryId !== -1">
                             <base-text-field
                                 :value.sync="pdfProcessorSrv.searchValue"
                                 :label="`Add Keyword To '${pdfProcessorSrv.selectedCategories.length > 0 ? pdfProcessorSrv.selectedCategories[0].Name : ''}'`"

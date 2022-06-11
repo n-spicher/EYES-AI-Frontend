@@ -4,7 +4,6 @@ export class SignupModel {
     public Email: string | null = null;
     public Password: string | null = null;
     public ConfirmPassword: string | null = null;
-    public Newsletter: boolean | null = true;
 
     constructor(data?: Partial<SignupModel>) {
         Object.assign(this, data);
