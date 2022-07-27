@@ -35,18 +35,18 @@ export class CategoryApi extends BaseApi {
     }
 
     public DeleteCategoryItem(id: number) {
-        return this.DELETE_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryItem/${id}`);
+        return this.GET_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryItem/${id}`);
     }
 
     public DeleteCategoryItemSynonym(id: number) {
-        return this.DELETE_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryItemSynonym/${id}`);
+        return this.GET_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryItemSynonym/${id}`);
     }
 
     public DeleteCategoryCode(id: number) {
-        return this.DELETE_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryCode/${id}`);
+        return this.GET_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategoryCode/${id}`);
     }
 
     public DeleteCategory(id: number) {
-        return this.DELETE_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategory/${id}`);
+        return this.GET_Request<{Status: boolean}>(`${this.ApiUrl}/Category/DeleteCategory/${id}`);
     }
 }

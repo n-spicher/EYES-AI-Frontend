@@ -110,8 +110,9 @@ export default class BackendComponent extends VueWrapper {
 
     public AddEquipmentClick() {
         if (this.$refs.addEquipmentDialog) {
-            this.$refs.addEquipmentDialog.reset();
+            this.selectedCategory = null;
             this.CoreSrv.OpenModal(this.$refs.addEquipmentDialog?.name);
+            this.$refs.addEquipmentDialog.reset();
         }
     }
 
@@ -125,11 +126,11 @@ export default class BackendComponent extends VueWrapper {
 
     public EditCategoryItemClick(category: CategoryModel, categoryItem: CategoryItemModel) {
         if (this.$refs.addKeyworddDialog) {
+            this.CoreSrv.OpenModal(this.$refs.addKeyworddDialog.name);
+            this.$refs.addKeyworddDialog.reset();
+
             this.selectedCategory = category;
             this.selectedCategoryItem = categoryItem;
-
-            this.$refs.addKeyworddDialog.reset();
-            this.CoreSrv.OpenModal(this.$refs.addKeyworddDialog.name);
         }
     }
 

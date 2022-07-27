@@ -8,19 +8,37 @@ export default class AddEquipmentDialogComponent extends VueWrapper {
 
     // public category: CategoryModel = new CategoryModel();
 
+    // @PropSync('category', {
+    //     type: Object
+    // })
+    public categoryO: CategoryModel = new CategoryModel();
+
+    public get getCategory(): CategoryModel {
+        return this.categoryO ?? new CategoryModel();
+    }
+
+    // public CategoryItemObj: CategoryItemModel = new CategoryItemModel();
+
     @PropSync('category', {
         type: Object
     })
-    public _category!: CategoryModel;
+    public categorySync!: CategoryModel;
 
-    public get getCategory(): CategoryModel {
-        return this._category ?? new CategoryModel();
+    public get categoryObj() {
+        if (this.categorySync) {
+            this.categoryO = this.categorySync;
+        }
+        if (this.categoryO == null) {
+            this.categoryO = new CategoryModel();
+        }
+
+        return this.categoryO;
     }
 
     public mounted() {}
 
     public reset() {
-        this._category = new CategoryModel();
+        this.categoryO = new CategoryModel();
     }
 
     public Close() {

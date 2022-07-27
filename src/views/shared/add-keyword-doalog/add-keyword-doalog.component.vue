@@ -1,13 +1,13 @@
 <template>
-    <base-dialog persistent :retain-focus="false" :name="name" max-width="800px">
-        <template #header> {{ CategoryItemObj.Id ? 'Edit' : 'Add' }} Keyword for ({{ category ? category.Name : '' }}) </template>
+    <base-dialog persistent :retain-focus="false" :name="name" max-width="800px" v-if="!!categoryItemData">
+        <template #header> {{ categoryItemData.Id ? 'Edit' : 'Add' }} Keyword for ({{ category ? category.Name : '' }}) </template>
 
         <v-row no-gutters>
             <v-col cols="12" class="mb-5">
-                <base-text-field name="Name" :value.sync="CategoryItemObj.Name" @change="keywordChange" label="Keyword" rules="required" />
+                <base-text-field name="Name" :value.sync="categoryItemData.Name" @change="keywordChange" label="Keyword" rules="required" />
             </v-col>
             <v-col cols="12" class="mb-5">
-                <base-text-field name="Note" :value.sync="CategoryItemObj.Note" label="Note" />
+                <base-text-field name="Note" :value.sync="categoryItemData.Note" label="Note" />
             </v-col>
         </v-row>
 
@@ -16,7 +16,7 @@
             <base-btn class="mr-auto error" @click="Close">
                 Cancel
             </base-btn>
-            <base-btn @click="$emit('save', CategoryItemObj)" :disabled="!CategoryItemObj.Name">
+            <base-btn @click="$emit('save', categoryItemData)" :disabled="!categoryItemData.Name">
                 Save
             </base-btn>
             <!-- </div> -->

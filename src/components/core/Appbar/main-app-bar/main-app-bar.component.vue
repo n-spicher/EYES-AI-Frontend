@@ -7,13 +7,18 @@
                 Submit
             </v-btn>
 
-            <v-btn text :to="{name: 'BackEnd'}" v-if="UserSessionSrv.isUserAuthenticated && (UserSessionSrv.isAdmin || UserSessionSrv.isSuperAdmin)">
-                BackEnd
-            </v-btn>
-
             <v-avatar tile min-width="150" height="80">
                 <v-img height="40" contain class="transparent cursor-pointer" @click="$router.push('/home')" width="50" :src="'/images/logo.png'" />
             </v-avatar>
+
+            <v-btn
+                class="mr-1"
+                text
+                :to="{name: 'BackEnd'}"
+                v-if="UserSessionSrv.isUserAuthenticated && (UserSessionSrv.isAdmin || UserSessionSrv.isSuperAdmin)"
+            >
+                BackEnd
+            </v-btn>
             <!-- 
             <v-btn text>
                 How It Works?

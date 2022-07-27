@@ -1,10 +1,10 @@
 <template>
     <base-dialog persistent :retain-focus="false" :name="name" max-width="800px">
-        <template #header> {{ getCategory.Id ? 'Edit' : 'Add' }} Equipment </template>
+        <template #header> {{ categoryObj.Id ? 'Edit' : 'Add' }} Equipment </template>
 
         <v-row no-gutters>
             <v-col cols="12" class="mb-5">
-                <base-text-field name="Name" :value.sync="getCategory.Name" label="Equipment Name" rules="required" />
+                <base-text-field name="Name" :value.sync="categoryObj.Name" label="Equipment Name" rules="required" />
             </v-col>
         </v-row>
 
@@ -13,7 +13,7 @@
             <base-btn class="mr-auto error" @click="Close">
                 Cancel
             </base-btn>
-            <base-btn @click="$emit('save', getCategory)" :disabled="!getCategory.Name">
+            <base-btn @click="$emit('save', categoryObj)" :disabled="!categoryObj.Name">
                 Save
             </base-btn>
             <!-- </div> -->

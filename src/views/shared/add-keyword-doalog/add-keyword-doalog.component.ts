@@ -20,16 +20,26 @@ export default class AddKeywordDialogComponent extends VueWrapper {
     public CategoryItemObj: CategoryItemModel = new CategoryItemModel();
 
     @PropSync('CategoryItem', {
-        type: Object
+        type: Object,
+        default: new CategoryItemModel()
     })
-    public set getCategoryItem(obj: CategoryItemModel) {
-        if (obj == null) {
-            this.CategoryItemObj = new CategoryItemModel();
-        } else {
-            this.CategoryItemObj = obj;
+    public CategoryItemProp!: CategoryItemModel;
+
+    // public set categoryItemData(obj: CategoryItemModel | null) {
+    //     console.log(this, obj);
+    //     if (obj == null) {
+    //         this.CategoryItemObj = new CategoryItemModel();
+    //     } else {
+    //         this.CategoryItemObj = obj;
+    //     }
+    // }
+    public get categoryItemData(): CategoryItemModel {
+        if (this.CategoryItemProp) {
+            this.CategoryItemObj = this.CategoryItemProp;
         }
-    }
-    public get getCategoryItem(): CategoryItemModel {
+        if (!this.CategoryItemObj) {
+            this.CategoryItemObj = new CategoryItemModel();
+        }
         return this.CategoryItemObj;
     }
 
